@@ -1,5 +1,12 @@
+const bodySelector = document.querySelector('body');
+const points = document.createElement('p');
+points.className = 'info';
+bodySelector.appendChild(points);
+const lifePoints = document.querySelector('.info');
+
+
 // Enemies our player must avoid
-var Enemy = function (x, y) {
+const Enemy = function (x, y) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
     this.x = x;
@@ -24,9 +31,15 @@ Enemy.prototype.update = function (dt) {
     }
 
     // Checks for collisions
-    if (player.x < this.x + 75 && player.x + 37 > this.x && player.y < this.y + 25 && 30 + player.y > this.y) {
+    if (this.x < player.x + 30 && this.x + 70 > player.x && this.y < player.y + 60 && this.y + 40 > player.y && player.lives > 0) {
         player.x = 200;
         player.y = 380;
+        player.lives--;
+        lifePoints.innerText = `Lives: ${player.lives} out of 3`;
+        if (player.lives === 0) {
+            lifePoints.innerText = 'You\'ve lost';
+            allEnemies.forEach(e => e.speed = 0);
+        }
     }
 };
 
@@ -38,11 +51,13 @@ Enemy.prototype.render = function () {
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-var Player = function (x, y) {
+const Player = function (x, y) {
     this.x = x;
     this.y = y;
     this.speed = 50;
     this.sprite = 'images/char-boy.png';
+    this.lives = 3;
+    lifePoints.innerText = `Lives: ${this.lives} out of 3`;
 };
 Player.prototype.update = function () {
     // Prevent player from moving out of canvas
@@ -60,6 +75,10 @@ Player.prototype.update = function () {
     if (this.y < 0) {
         this.x = 200;
         this.y = 380;
+        if (player.lives > 0) {
+            lifePoints.innerText = 'You won!';
+        }
+
     }
 };
 Player.prototype.render = function () {
@@ -98,7 +117,7 @@ enemyPosition.forEach(function (posY) {
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function (e) {
-    var allowedKeys = {
+    const allowedKeys = {
         37: 'left',
         38: 'up',
         39: 'right',
@@ -107,3 +126,5 @@ document.addEventListener('keyup', function (e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+
